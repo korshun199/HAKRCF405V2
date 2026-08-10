@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UNO Q — компьютерное зрение</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #07101f; color: #e5e7eb; }
+    main { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 48px; }
+    h1 { margin: 0; color: #7dd3fc; }
+    .header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .button { display: inline-flex; align-items: center; min-height: 42px; padding: 0 16px; border: 1px solid #36516f; border-radius: 10px; background: #14233a; color: #e2e8f0; font-weight: 700; text-decoration: none; }
+    .button:hover { border-color: #60a5fa; background: #1b3151; }
+    .subtitle { margin: 8px 0 24px; color: #94a3b8; }
+    .layout { display: grid; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); gap: 18px; }
+    .panel { overflow: hidden; border: 1px solid #263449; border-radius: 16px; background: #0f172a; box-shadow: 0 18px 50px #0005; }
+    .video { display: grid; min-height: 420px; place-items: center; background: #020617; }
+    .video img { display: none; width: 100%; height: auto; }
+    .placeholder { padding: 32px; text-align: center; color: #94a3b8; }
+    .cards { display: grid; gap: 12px; padding: 16px; }
+    .card { padding: 16px; border: 1px solid #263449; border-radius: 12px; background: #111c31; }
+    .label { margin-bottom: 6px; color: #94a3b8; font-size: 13px; text-transform: uppercase; letter-spacing: .07em; }
+    .value { color: #f8fafc; font-size: 20px; font-weight: 700; }
+    .ok { color: #86efac; }
+    .wait { color: #fcd34d; }
+    .footer { margin-top: 16px; color: #64748b; font-size: 13px; }
+    @media (max-width: 800px) { .layout { grid-template-columns: 1fr; } .video { min-height: 260px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="header">
+      <h1>Компьютерное зрение UNO Q</h1>
+      <a class="button" href="/settings.html">Настройки</a>
+    </div>
+    <p class="subtitle">Асинхронное распознавание электрочайника моделью YOLO-Worldv2</p>
+    <section class="layout">
+      <div class="panel video">
+        <div id="placeholder" class="placeholder">Ожидание USB-камеры</div>
+        <img id="video" src="/video" alt="Поток с камеры">
+      </div>
+      <div class="panel cards">
+        <div class="card"><div class="label">Камера</div><div id="camera" class="value wait">проверка</div></div>
+        <div class="card"><div class="label">Электрочайник</div><div id="object" class="value">не обнаружен</div></div>
+        <div class="card"><div class="label">Уверенность</div><div id="confidence" class="value">0,0 %</div></div>
+        <div class="card"><div class="label">По горизонтали</div><div id="horizontal" class="value">—</div></div>
+        <div class="card"><div class="label">Время распознавания</div><div id="inference" class="value">0,000 с</div></div>
+        <div class="card"><div class="label">Частота видеопотока</div><div id="fps" class="value">0 FPS</div></div>
+      </div>
+    </section>
+    <div id="error" class="footer"></div>
+  </main>
+  <script>
+    const elements = Object.fromEntries(["camera", "object", "confidence", "horizontal", "inference", "fps", "error", "video", "placeholder"].map(id => [id, document.getElementById(id)]));
+
+    async function updateStatus() {
+      try {
+        const response = await fetch("/api/status", { cache: "no-store" });
+        const data = await response.json();
+        const running = data.runtime.camera_state === "камера работает";
+        elements.camera.textContent = data.runtime.camera_state;
+        elements.camera.className = `value ${running ? "ok" : "wait"}`;
+        elements.object.textContent = data.detection.detected ? data.detection.label : "не обнаружен";
+        elements.object.className = `value ${data.detection.detected ? "ok" : ""}`;
+        elements.confidence.textContent = `${(data.detection.confidence * 100).toFixed(1)} %`;
+        elements.horizontal.textContent = data.detection.horizontal;
+        elements.inference.textContent = `${data.detection.inference_seconds.toFixed(3)} с`;
+        elements.fps.textContent = `${data.runtime.fps.toFixed(1)} FPS`;
+        elements.error.textContent = data.runtime.error || "";
+        elements.video.style.display = running ? "block" : "none";
+        elements.placeholder.style.display = running ? "none" : "block";
+      } catch (error) {
+        elements.camera.textContent = "сервис недоступен";
+        elements.camera.className = "value wait";
+        elements.error.textContent = error.message;
+      }
+    }
+
+    async function start() {
+      let refresh = 500;
+      try {
+        const response = await fetch("/api/config", { cache: "no-store" });
+        const configuration = await response.json();
+        refresh = configuration.web.status_refresh_ms;
+      } catch (error) {
+        elements.error.textContent = `Настройки недоступны: ${error.message}`;
+      }
+      await updateStatus();
+      setInterval(updateStatus, refresh);
+    }
+
+    start();
+  </script>
+</body>
+</html>

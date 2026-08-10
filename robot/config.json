@@ -1,0 +1,31 @@
+{
+  "camera": {
+    "device": "auto",
+    "width": 640,
+    "height": 480,
+    "fps": 25,
+    "jpeg_quality": 82,
+    "reconnect_seconds": 2
+  },
+  "vision": {
+    "background_alpha": 0.025,
+    "threshold": 28,
+    "minimum_area_ratio": 0.006,
+    "history_size": 8,
+    "horizontal_threshold": 0.025,
+    "approach_ratio": 1.14,
+    "recede_ratio": 0.88
+  },
+  "kettle": {
+    "model_path": "models/kettle_480.onnx",
+    "input_size": 480,
+    "confidence_threshold": 0.35,
+    "nms_threshold": 0.45,
+    "inference_interval_seconds": 0.5
+  },
+  "web": {
+    "port": 8000,
+    "status_refresh_ms": 500,
+    "system_refresh_ms": 5000
+  }
+}

@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1040" viewBox="0 0 1500 1040">
+  <defs>
+    <style>
+      .bg { fill: #07101f; }
+      .box { fill: #111c31; stroke: #60a5fa; stroke-width: 3; rx: 18; }
+      .power { stroke: #ef4444; stroke-width: 6; fill: none; }
+      .ground { stroke: #94a3b8; stroke-width: 5; fill: none; }
+      .video { stroke: #facc15; stroke-width: 5; fill: none; }
+      .data { stroke: #22c55e; stroke-width: 5; fill: none; }
+      .usb { stroke: #a78bfa; stroke-width: 5; fill: none; }
+      .title { fill: #f8fafc; font: 700 34px sans-serif; }
+      .head { fill: #7dd3fc; font: 700 23px sans-serif; }
+      .text { fill: #e2e8f0; font: 19px sans-serif; }
+      .small { fill: #cbd5e1; font: 16px sans-serif; }
+      .warn { fill: #fca5a5; font: 700 18px sans-serif; }
+      .label { fill: #f8fafc; font: 700 17px sans-serif; paint-order: stroke; stroke: #07101f; stroke-width: 6px; stroke-linejoin: round; }
+    </style>
+    <marker id="arrow-red" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 Z" fill="#ef4444"/></marker>
+    <marker id="arrow-yellow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 Z" fill="#facc15"/></marker>
+    <marker id="arrow-green" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 Z" fill="#22c55e"/></marker>
+    <marker id="arrow-purple" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 Z" fill="#a78bfa"/></marker>
+  </defs>
+
+  <rect class="bg" width="1500" height="1040"/>
+  <text class="title" x="750" y="52" text-anchor="middle">Автономная схема дрона: HAKRC F405 V2 + Arduino UNO Q</text>
+  <text class="small" x="750" y="82" text-anchor="middle">АКБ LiPo 5S 8700 мА·ч: 15–21 В, а не 24 В</text>
+
+  <rect class="box" x="50" y="130" width="290" height="145"/>
+  <text class="head" x="195" y="170" text-anchor="middle">АКБ LiPo 5S</text>
+  <text class="text" x="195" y="203" text-anchor="middle">18,5 В номинал</text>
+  <text class="text" x="195" y="232" text-anchor="middle">21,0 В полный заряд</text>
+  <text class="small" x="195" y="258" text-anchor="middle">Главный разъём и предохранители</text>
+
+  <rect class="box" x="470" y="105" width="330" height="150"/>
+  <text class="head" x="635" y="145" text-anchor="middle">ESC / силовая плата</text>
+  <text class="text" x="635" y="180" text-anchor="middle">Вход VBAT: 5S</text>
+  <text class="text" x="635" y="210" text-anchor="middle">Моторы и токовый датчик</text>
+  <text class="small" x="635" y="238" text-anchor="middle">Пропеллеры снять при стендовой проверке</text>
+
+  <rect class="box" x="1010" y="105" width="360" height="185"/>
+  <text class="head" x="1190" y="145" text-anchor="middle">HAKRC F405 V2</text>
+  <text class="text" x="1190" y="180" text-anchor="middle">Betaflight, стабилизация, OSD</text>
+  <text class="text" x="1190" y="210" text-anchor="middle">CAM → обработка видео → VTX</text>
+  <text class="text" x="1190" y="240" text-anchor="middle">UART6 ↔ UNO Q, MSP</text>
+  <text class="small" x="1190" y="270" text-anchor="middle">Питание через штатную силовую цепь ESC</text>
+
+  <rect class="box" x="50" y="390" width="340" height="170"/>
+  <text class="head" x="220" y="430" text-anchor="middle">DC-DC №1</text>
+  <text class="text" x="220" y="465" text-anchor="middle">Вход: 15–21 В</text>
+  <text class="text" x="220" y="495" text-anchor="middle">Выход USB-C: 5,0 В / 3 А (15 Вт)</text>
+  <text class="small" x="220" y="525" text-anchor="middle">Модуль USB-C source/CC, не голый DC-DC</text>
+  <text class="warn" x="220" y="550" text-anchor="middle">12 В сюда подавать нельзя</text>
+
+  <rect class="box" x="490" y="390" width="310" height="170"/>
+  <text class="head" x="645" y="430" text-anchor="middle">Питаемый USB-хаб</text>
+  <text class="text" x="645" y="465" text-anchor="middle">PD IN: профиль 5 В / 3 А</text>
+  <text class="text" x="645" y="495" text-anchor="middle">Host USB-C → UNO Q</text>
+  <text class="text" x="645" y="525" text-anchor="middle">USB-A → EasyCAP</text>
+
+  <rect class="box" x="940" y="390" width="350" height="170"/>
+  <text class="head" x="1115" y="430" text-anchor="middle">Arduino UNO Q</text>
+  <text class="text" x="1115" y="465" text-anchor="middle">Linux + OpenCV + модель</text>
+  <text class="text" x="1115" y="495" text-anchor="middle">Питание USB-C: строго 5 В</text>
+  <text class="text" x="1115" y="525" text-anchor="middle">Получает видео от EasyCAP</text>
+
+  <rect class="box" x="50" y="705" width="340" height="155"/>
+  <text class="head" x="220" y="745" text-anchor="middle">DC-DC №2</text>
+  <text class="text" x="220" y="780" text-anchor="middle">Вход: 15–21 В</text>
+  <text class="text" x="220" y="810" text-anchor="middle">Выход: 12 В / не менее 1 А</text>
+  <text class="small" x="220" y="838" text-anchor="middle">Фильтр LC желательно</text>
+
+  <rect class="box" x="490" y="705" width="310" height="155"/>
+  <text class="head" x="645" y="745" text-anchor="middle">FPV-камера 5–36 В</text>
+  <text class="text" x="645" y="780" text-anchor="middle">Красный: +12 В</text>
+  <text class="text" x="645" y="810" text-anchor="middle">Чёрный: GND</text>
+  <text class="text" x="645" y="840" text-anchor="middle">Жёлтый: VIDEO</text>
+
+  <rect class="box" x="940" y="705" width="350" height="155"/>
+  <text class="head" x="1115" y="745" text-anchor="middle">EasyCAP MS210x</text>
+  <text class="text" x="1115" y="780" text-anchor="middle">Жёлтый RCA: композитное видео</text>
+  <text class="text" x="1115" y="810" text-anchor="middle">USB → питаемый хаб</text>
+  <text class="small" x="1115" y="840" text-anchor="middle">Красный/белый RCA не используются</text>
+
+  <path class="power" marker-end="url(#arrow-red)" d="M340 170 H470"/>
+  <text class="label" x="405" y="158" text-anchor="middle">VBAT 5S</text>
+  <path class="power" marker-end="url(#arrow-red)" d="M800 170 H1010"/>
+  <text class="label" x="905" y="158" text-anchor="middle">питание FC</text>
+
+  <path class="power" marker-end="url(#arrow-red)" d="M195 275 V335 H220 V390"/>
+  <text class="label" x="228" y="336">пред. 3 А</text>
+  <path class="power" marker-end="url(#arrow-red)" d="M390 475 H490"/>
+  <text class="label" x="440" y="462" text-anchor="middle">5 В</text>
+  <path class="usb" marker-end="url(#arrow-purple)" d="M800 475 H940"/>
+  <text class="label" x="870" y="462" text-anchor="middle">USB-C host</text>
+
+  <path class="power" marker-end="url(#arrow-red)" d="M145 275 V650 H220 V705"/>
+  <text class="label" x="172" y="650">пред. 1 А</text>
+  <path class="power" marker-end="url(#arrow-red)" d="M390 782 H490"/>
+  <text class="label" x="440" y="770" text-anchor="middle">12 В</text>
+
+  <path class="video" marker-end="url(#arrow-yellow)" d="M800 760 H865 V330 H1080 V290"/>
+  <text class="label" x="845" y="746">VIDEO → CAM</text>
+  <path class="video" marker-end="url(#arrow-yellow)" d="M1240 290 V650 H1115 V705"/>
+  <text class="label" x="1258" y="470">VTX → RCA</text>
+
+  <path class="usb" marker-end="url(#arrow-purple)" d="M940 790 H860 V535 H800"/>
+  <text class="label" x="858" y="615">USB EasyCAP</text>
+
+  <path class="data" marker-end="url(#arrow-green)" d="M1010 230 H900 V350 H1115 V390"/>
+  <text class="label" x="930" y="340">UART6 3,3 В: TX↔RX, GND</text>
+
+  <path class="ground" d="M80 920 H1370"/>
+  <text class="head" x="725" y="956" text-anchor="middle">ОБЩАЯ ЗЕМЛЯ: АКБ −, ESC, HAKRC, оба DC-DC, камера, хаб, UNO Q, экран RCA</text>
+  <text class="warn" x="725" y="992" text-anchor="middle">Перед подключением измерить мультиметром 5,0 В и 12 В без нагрузки, затем проверить под нагрузкой</text>
+  <text class="small" x="725" y="1020" text-anchor="middle">Регулируемый DC-DC неизвестной мощности использовать только после проверки допустимого входа, тока и охлаждения</text>
+</svg>

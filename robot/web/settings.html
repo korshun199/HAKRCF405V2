@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UNO Q — настройки</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #07101f; color: #e5e7eb; }
+    main { width: min(1050px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 48px; }
+    h1, h2 { margin-top: 0; color: #7dd3fc; }
+    .header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
+    .button { display: inline-flex; align-items: center; min-height: 42px; padding: 0 16px; border: 1px solid #36516f; border-radius: 10px; background: #14233a; color: #e2e8f0; font-weight: 700; text-decoration: none; cursor: pointer; }
+    .button:hover { border-color: #60a5fa; background: #1b3151; }
+    .section { margin-bottom: 18px; padding: 20px; border: 1px solid #263449; border-radius: 16px; background: #0f172a; box-shadow: 0 18px 50px #0004; }
+    .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+    .card { padding: 14px; border: 1px solid #263449; border-radius: 12px; background: #111c31; }
+    .label { margin-bottom: 5px; color: #94a3b8; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+    .value { overflow-wrap: anywhere; color: #f8fafc; font-weight: 700; }
+    .parameters { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+    label { display: grid; gap: 7px; color: #cbd5e1; }
+    input, select { min-height: 42px; padding: 0 12px; border: 1px solid #334155; border-radius: 9px; background: #0b1324; color: #e5e7eb; }
+    input:disabled { color: #64748b; }
+    .note { color: #94a3b8; }
+    .command-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; }
+    pre { min-height: 220px; max-height: 440px; overflow: auto; margin: 14px 0 0; padding: 16px; border: 1px solid #263449; border-radius: 10px; background: #020617; color: #bbf7d0; white-space: pre-wrap; }
+    @media (max-width: 650px) { .header { align-items: flex-start; flex-direction: column; } .command-row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="header">
+      <h1>Настройки UNO Q</h1>
+      <a class="button" href="/">На главную</a>
+    </div>
+
+    <section class="section">
+      <h2>Информация</h2>
+      <div class="info-grid">
+        <div class="card"><div class="label">Имя устройства</div><div id="hostname" class="value">загрузка</div></div>
+        <div class="card"><div class="label">Платформа</div><div id="platform" class="value">загрузка</div></div>
+        <div class="card"><div class="label">Архитектура</div><div id="architecture" class="value">загрузка</div></div>
+        <div class="card"><div class="label">Время работы</div><div id="uptime" class="value">загрузка</div></div>
+        <div class="card"><div class="label">Оперативная память</div><div id="memory" class="value">загрузка</div></div>
+        <div class="card"><div class="label">Диск</div><div id="disk" class="value">загрузка</div></div>
+        <div class="card"><div class="label">Нагрузка</div><div id="load" class="value">загрузка</div></div>
+        <div class="card"><div class="label">Температура</div><div id="temperature" class="value">загрузка</div></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Параметры</h2>
+      <p class="note">Все значения загружаются из единого файла <code>/home/work/robot/config.json</code>.</p>
+      <form id="config-form">
+        <h3>Камера</h3>
+        <div class="parameters">
+          <label>Устройство<input id="camera-device" value="auto"></label>
+          <label>Ширина<input id="camera-width" type="number" min="160" max="3840"></label>
+          <label>Высота<input id="camera-height" type="number" min="120" max="2160"></label>
+          <label>Кадров в секунду<input id="camera-fps" type="number" min="1" max="120"></label>
+          <label>Качество JPEG<input id="camera-jpeg" type="number" min="30" max="100"></label>
+          <label>Повтор подключения, сек<input id="camera-reconnect" type="number" min="0.2" max="60" step="0.1"></label>
+        </div>
+        <h3>Детектор движения (совместимость)</h3>
+        <div class="parameters">
+          <label>Порог отличия от фона<input id="vision-threshold" type="number" min="1" max="255"></label>
+          <label>Минимальная площадь<input id="vision-area" type="number" min="0.0001" max="0.5" step="0.0001"></label>
+          <label>Скорость обновления фона<input id="vision-alpha" type="number" min="0.001" max="0.5" step="0.001"></label>
+          <label>Размер истории<input id="vision-history" type="number" min="4" max="120"></label>
+          <label>Порог движения вбок<input id="vision-horizontal" type="number" min="0.001" max="0.5" step="0.001"></label>
+          <label>Коэффициент приближения<input id="vision-approach" type="number" min="1.01" max="10" step="0.01"></label>
+          <label>Коэффициент удаления<input id="vision-recede" type="number" min="0.05" max="0.99" step="0.01"></label>
+        </div>
+        <h3>Распознавание электрочайника</h3>
+        <div class="parameters">
+          <label>Путь к модели<input id="kettle-model"></label>
+          <label>Размер входа<input id="kettle-input" type="number" min="32" max="2048"></label>
+          <label>Порог уверенности<input id="kettle-confidence" type="number" min="0.01" max="1" step="0.01"></label>
+          <label>Порог подавления рамок<input id="kettle-nms" type="number" min="0.01" max="1" step="0.01"></label>
+          <label>Интервал распознавания, сек<input id="kettle-interval" type="number" min="0.05" max="60" step="0.05"></label>
+        </div>
+        <h3>Веб-интерфейс</h3>
+        <div class="parameters">
+          <label>Порт сервиса<input id="web-port" type="number" min="1024" max="65535" disabled></label>
+          <label>Обновление статуса, мс<input id="web-status-refresh" type="number" min="100" max="60000"></label>
+          <label>Обновление информации, мс<input id="web-system-refresh" type="number" min="500" max="60000"></label>
+        </div>
+        <p class="note">Порт является системным параметром nginx и показан только для информации. Остальные параметры применяются сразу.</p>
+        <button class="button" type="submit">Сохранить настройки</button>
+        <span id="config-result" class="note"></span>
+      </form>
+    </section>
+
+    <section class="section">
+      <h2>Командная строка</h2>
+      <p class="note">Веб-консоль выполняет только разрешённые диагностические команды. Для полного терминала используется SSH.</p>
+      <form id="command-form" class="command-row">
+        <input id="command" list="commands" autocomplete="off" placeholder="Введите help">
+        <datalist id="commands"></datalist>
+        <button class="button" type="submit">Выполнить</button>
+      </form>
+      <pre id="terminal">Введите help для списка команд.</pre>
+    </section>
+  </main>
+  <script>
+    const byId = id => document.getElementById(id);
+    let configuration = null;
+    let systemTimer = null;
+    const formatBytes = value => {
+      const units = ["Б", "КиБ", "МиБ", "ГиБ"];
+      let size = Number(value) || 0;
+      let unit = 0;
+      while (size >= 1024 && unit < units.length - 1) { size /= 1024; unit += 1; }
+      return `${size.toFixed(unit < 2 ? 0 : 1)} ${units[unit]}`;
+    };
+    const formatUptime = seconds => {
+      const days = Math.floor(seconds / 86400);
+      const hours = Math.floor((seconds % 86400) / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      return `${days} д ${hours} ч ${minutes} мин`;
+    };
+
+    async function loadConfiguration() {
+      const response = await fetch("/api/config", { cache: "no-store" });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      configuration = await response.json();
+      byId("camera-device").value = configuration.camera.device;
+      byId("camera-width").value = configuration.camera.width;
+      byId("camera-height").value = configuration.camera.height;
+      byId("camera-fps").value = configuration.camera.fps;
+      byId("camera-jpeg").value = configuration.camera.jpeg_quality;
+      byId("camera-reconnect").value = configuration.camera.reconnect_seconds;
+      byId("vision-threshold").value = configuration.vision.threshold;
+      byId("vision-area").value = configuration.vision.minimum_area_ratio;
+      byId("vision-alpha").value = configuration.vision.background_alpha;
+      byId("vision-history").value = configuration.vision.history_size;
+      byId("vision-horizontal").value = configuration.vision.horizontal_threshold;
+      byId("vision-approach").value = configuration.vision.approach_ratio;
+      byId("vision-recede").value = configuration.vision.recede_ratio;
+      byId("kettle-model").value = configuration.kettle.model_path;
+      byId("kettle-input").value = configuration.kettle.input_size;
+      byId("kettle-confidence").value = configuration.kettle.confidence_threshold;
+      byId("kettle-nms").value = configuration.kettle.nms_threshold;
+      byId("kettle-interval").value = configuration.kettle.inference_interval_seconds;
+      byId("web-port").value = configuration.web.port;
+      byId("web-status-refresh").value = configuration.web.status_refresh_ms;
+      byId("web-system-refresh").value = configuration.web.system_refresh_ms;
+    }
+
+    function configurationFromForm() {
+      return {
+        camera: {
+          device: byId("camera-device").value.trim(),
+          width: Number(byId("camera-width").value),
+          height: Number(byId("camera-height").value),
+          fps: Number(byId("camera-fps").value),
+          jpeg_quality: Number(byId("camera-jpeg").value),
+          reconnect_seconds: Number(byId("camera-reconnect").value)
+        },
+        vision: {
+          background_alpha: Number(byId("vision-alpha").value),
+          threshold: Number(byId("vision-threshold").value),
+          minimum_area_ratio: Number(byId("vision-area").value),
+          history_size: Number(byId("vision-history").value),
+          horizontal_threshold: Number(byId("vision-horizontal").value),
+          approach_ratio: Number(byId("vision-approach").value),
+          recede_ratio: Number(byId("vision-recede").value)
+        },
+        kettle: {
+          model_path: byId("kettle-model").value.trim(),
+          input_size: Number(byId("kettle-input").value),
+          confidence_threshold: Number(byId("kettle-confidence").value),
+          nms_threshold: Number(byId("kettle-nms").value),
+          inference_interval_seconds: Number(byId("kettle-interval").value)
+        },
+        web: {
+          port: Number(byId("web-port").value),
+          status_refresh_ms: Number(byId("web-status-refresh").value),
+          system_refresh_ms: Number(byId("web-system-refresh").value)
+        }
+      };
+    }
+
+    async function loadSystem() {
+      try {
+        const response = await fetch("/api/system", { cache: "no-store" });
+        const data = await response.json();
+        const system = data.system;
+        byId("hostname").textContent = system.hostname;
+        byId("platform").textContent = system.platform;
+        byId("architecture").textContent = `${system.architecture}, Python ${system.python}`;
+        byId("uptime").textContent = formatUptime(system.uptime_seconds);
+        byId("memory").textContent = `${formatBytes(system.memory.used)} / ${formatBytes(system.memory.total)}`;
+        byId("disk").textContent = `${formatBytes(system.disk.used)} / ${formatBytes(system.disk.total)}`;
+        byId("load").textContent = system.load_average.map(value => value.toFixed(2)).join(" / ");
+        byId("temperature").textContent = system.temperature_c === null ? "нет датчика" : `${system.temperature_c.toFixed(1)} °C`;
+        byId("commands").replaceChildren(...data.commands.map(command => Object.assign(document.createElement("option"), { value: command })));
+      } catch (error) {
+        byId("terminal").textContent = `Ошибка загрузки информации: ${error.message}`;
+      }
+    }
+
+    byId("config-form").addEventListener("submit", async event => {
+      event.preventDefault();
+      byId("config-result").textContent = "сохранение...";
+      try {
+        const response = await fetch("/api/config", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(configurationFromForm())
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || `HTTP ${response.status}`);
+        configuration = result;
+        byId("config-result").textContent = "Настройки сохранены";
+        clearInterval(systemTimer);
+        systemTimer = setInterval(loadSystem, configuration.web.system_refresh_ms);
+      } catch (error) {
+        byId("config-result").textContent = `Ошибка: ${error.message}`;
+      }
+    });
+
+    byId("command-form").addEventListener("submit", async event => {
+      event.preventDefault();
+      const command = byId("command").value.trim();
+      if (!command) return;
+      byId("terminal").textContent = `$ ${command}\nвыполнение...`;
+      try {
+        const response = await fetch("/api/command", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ command })
+        });
+        const result = await response.json();
+        byId("terminal").textContent = `$ ${command}\n${result.output || result.error || "нет вывода"}\n\nкод: ${result.exit_code ?? response.status}`;
+      } catch (error) {
+        byId("terminal").textContent = `$ ${command}\nОшибка: ${error.message}`;
+      }
+    });
+
+    async function start() {
+      try {
+        await loadConfiguration();
+        await loadSystem();
+        systemTimer = setInterval(loadSystem, configuration.web.system_refresh_ms);
+      } catch (error) {
+        byId("terminal").textContent = `Ошибка запуска: ${error.message}`;
+      }
+    }
+
+    start();
+  </script>
+</body>
+</html>
