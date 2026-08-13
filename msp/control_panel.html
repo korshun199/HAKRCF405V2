@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNO Q — Панель управления</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: monospace; background: #1a1a2e; color: #e0e0e0; padding: 10px; }
+h1 { text-align: center; color: #0f3460; background: #16213e; padding: 10px; border-radius: 8px; margin-bottom: 15px; }
+h2 { color: #e94560; margin: 15px 0 8px; font-size: 1.1em; }
+.panel { background: #16213e; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+input[type="text"] { flex: 1; min-width: 200px; padding: 10px; font-size: 1.1em; background: #0f3460; color: #e0e0e0; border: 1px solid #e94560; border-radius: 4px; }
+button { padding: 10px 18px; font-size: 1em; background: #e94560; color: #fff; border: none; border-radius: 4px; cursor: pointer; transition: 0.2s; }
+button:hover { background: #c73650; }
+button:active { transform: scale(0.96); }
+button.green { background: #2ecc71; }
+button.green:hover { background: #27ae60; }
+button.red { background: #e74c3c; }
+button.red:hover { background: #c0392b; }
+button.blue { background: #3498db; }
+button.blue:hover { background: #2980b9; }
+button.gray { background: #555; }
+button.gray:hover { background: #444; }
+.preset { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.preset button { font-size: 0.9em; padding: 8px 12px; }
+.slider-row { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
+.slider-row label { width: 80px; text-align: right; color: #e94560; }
+.slider-row input[type="range"] { flex: 1; }
+.slider-row .val { width: 60px; text-align: center; background: #0f3460; padding: 4px; border-radius: 4px; }
+.status { padding: 8px; margin: 8px 0; border-radius: 4px; font-size: 0.9em; }
+.status.ok { background: #1a4a2a; color: #2ecc71; }
+.status.err { background: #4a1a1a; color: #e74c3c; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+@media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<h1>UNO Q — Панель управления</h1>
+
+<div class="grid">
+
+<!-- OSD -->
+<div class="panel">
+<h2>OSD — Надпись на экране</h2>
+<div class="row">
+<input type="text" id="osdText" placeholder="Введите текст..." maxlength="16" value="TRAKTOR 0">
+<button onclick="sendOsd()">Отправить</button>
+</div>
+<div class="preset">
+<button class="gray" onclick="setOsd('TRAKTOR 0')">TRAKTOR 0</button>
+<button class="gray" onclick="setOsd('VENIK 1')">VENIK 1</button>
+<button class="gray" onclick="setOsd('STAKAN 2')">STAKAN 2</button>
+<button class="gray" onclick="setOsd('CHAYNIK 3')">CHAYNIK 3</button>
+<button class="gray" onclick="setOsd('NONE 0')">NONE 0</button>
+</div>
+<div id="osdStatus"></div>
+</div>
+
+<!-- Управление -->
+<div class="panel">
+<h2>Управление самолётом</h2>
+
+<div class="row" style="margin-bottom:10px">
+<button class="green" onclick="arm()">ARM</button>
+<button class="red" onclick="disarm()">DISARM</button>
+<button class="gray" onclick="neutral()">НЕЙТРАЛЬ</button>
+</div>
+
+<div class="slider-row">
+<label>Roll</label>
+<input type="range" id="roll" min="1000" max="2000" value="1500" step="10" oninput="showVal(this)">
+<span class="val" id="rollVal">1500</span>
+</div>
+<div class="slider-row">
+<label>Pitch</label>
+<input type="range" id="pitch" min="1000" max="2000" value="1500" step="10" oninput="showVal(this)">
+<span class="val" id="pitchVal">1500</span>
+</div>
+<div class="slider-row">
+<label>Yaw</label>
+<input type="range" id="yaw" min="1000" max="2000" value="1500" step="10" oninput="showVal(this)">
+<span class="val" id="yawVal">1500</span>
+</div>
+<div class="slider-row">
+<label>Throttle</label>
+<input type="range" id="throttle" min="1000" max="2000" value="1000" step="10" oninput="showVal(this)">
+<span class="val" id="throttleVal">1000</span>
+</div>
+<div class="slider-row">
+<label>AUX1</label>
+<input type="range" id="aux1" min="1000" max="2000" value="1000" step="10" oninput="showVal(this)">
+<span class="val" id="aux1Val">1000</span>
+</div>
+
+<button class="blue" onclick="steer()" style="width:100%;margin-top:8px">ОТПРАВИТЬ УПРАВЛЕНИЕ</button>
+<div id="rcStatus"></div>
+</div>
+
+</div>
+
+<script>
+function showVal(el) {
+ document.getElementById(el.id + 'Val').textContent = el.value;
+}
+
+async function sendOsd() {
+ const text = document.getElementById('osdText').value;
+ const st = document.getElementById('osdStatus');
+ st.innerHTML = '<div class="status">Отправка...</div>';
+ try {
+  const r = await fetch('/api/osd', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({text})});
+  const d = await r.json();
+  if (d.ok) st.innerHTML = '<div class="status ok">OSD: ' + d.text + '</div>';
+  else st.innerHTML = '<div class="status err">Ошибка: ' + d.error + '</div>';
+ } catch(e) { st.innerHTML = '<div class="status err">' + e + '</div>'; }
+}
+
+function setOsd(t) {
+ document.getElementById('osdText').value = t;
+ sendOsd();
+}
+
+async function steer() {
+ const data = {
+  roll: +document.getElementById('roll').value,
+  pitch: +document.getElementById('pitch').value,
+  yaw: +document.getElementById('yaw').value,
+  throttle: +document.getElementById('throttle').value,
+  aux1: +document.getElementById('aux1').value,
+ };
+ const st = document.getElementById('rcStatus');
+ st.innerHTML = '<div class="status">Отправка...</div>';
+ try {
+  const r = await fetch('/api/rc/steer', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)});
+  const d = await r.json();
+  if (d.ok) {
+   document.getElementById('roll').value = data.roll; document.getElementById('rollVal').textContent = data.roll;
+   document.getElementById('pitch').value = data.pitch; document.getElementById('pitchVal').textContent = data.pitch;
+   document.getElementById('yaw').value = data.yaw; document.getElementById('yawVal').textContent = data.yaw;
+   document.getElementById('throttle').value = data.throttle; document.getElementById('throttleVal').textContent = data.throttle;
+   document.getElementById('aux1').value = data.aux1; document.getElementById('aux1Val').textContent = data.aux1;
+   st.innerHTML = '<div class="status ok">OK: R=' + data.roll + ' P=' + data.pitch + ' Y=' + data.yaw + ' T=' + data.throttle + ' A=' + data.aux1 + '</div>';
+  } else st.innerHTML = '<div class="status err">Ошибка: ' + d.error + '</div>';
+ } catch(e) { st.innerHTML = '<div class="status err">' + e + '</div>'; }
+}
+
+async function arm() {
+ const st = document.getElementById('rcStatus');
+ try {
+  const r = await fetch('/api/rc/arm', {method:'POST'});
+  const d = await r.json();
+  if (d.ok) st.innerHTML = '<div class="status ok">ARM отправлен!</div>';
+  else st.innerHTML = '<div class="status err">Ошибка: ' + d.error + '</div>';
+ } catch(e) { st.innerHTML = '<div class="status err">' + e + '</div>'; }
+}
+
+async function disarm() {
+ const st = document.getElementById('rcStatus');
+ try {
+  const r = await fetch('/api/rc/disarm', {method:'POST'});
+  const d = await r.json();
+  if (d.ok) st.innerHTML = '<div class="status ok">DISARM отправлен!</div>';
+  else st.innerHTML = '<div class="status err">Ошибка: ' + d.error + '</div>';
+ } catch(e) { st.innerHTML = '<div class="status err">' + e + '</div>'; }
+}
+
+async function neutral() {
+ const st = document.getElementById('rcStatus');
+ try {
+  const r = await fetch('/api/rc/neutral', {method:'POST'});
+  const d = await r.json();
+  if (d.ok) st.innerHTML = '<div class="status ok">НЕЙТРАЛЬ отправлен!</div>';
+  else st.innerHTML = '<div class="status err">Ошибка: ' + d.error + '</div>';
+ } catch(e) { st.innerHTML = '<div class="status err">' + e + '</div>'; }
+}
+</script>
+</body>
+</html>
